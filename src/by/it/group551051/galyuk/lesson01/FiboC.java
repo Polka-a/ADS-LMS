@@ -1,5 +1,5 @@
 package by.it.group551051.galyuk.lesson01;
-
+import java.util.ArrayList;
 /*
  * Даны целые числа 1<=n<=1E18 и 2<=m<=1E5,
  * необходимо найти остаток от деления n-го числа Фибоначчи на m
@@ -25,12 +25,20 @@ public class FiboC {
         //Интуитивно найти решение не всегда просто и
         //возможно потребуется дополнительный поиск информации
 
-        // для решения использую периоды Пизано. Каждые три числа Фибоначчи повторяется остаток от деления
-        // 0 1 1. Значит нужно найти, какое место в "тройке" занимает переданный порядкой номер
-        // для этого нужно найти остаток от деления на 3
+        ArrayList<Integer> mods = new ArrayList<>();
+        mods.add(0);
+        mods.add(1);
 
+        for (int i = 2; i <= m*6; i++) {
+            mods.add((mods.get(i-1) + mods.get(i-2)) % m);
 
-        return -1L;
+        if ((mods.get(mods.size() - 1) == 1) && (mods.get(mods.size() - 2) == 0)) {
+            mods.subList(mods.size() - 2, mods.size()).clear();
+            break;
+        }
+
+        }
+        return mods.get((int)(n % mods.size()));
     }
 
 
