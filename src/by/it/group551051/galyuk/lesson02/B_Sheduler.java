@@ -2,6 +2,8 @@ package by.it.group551051.galyuk.lesson02;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
+
 /*
 Даны интервальные события events
 реализуйте метод calcStartTimes, так, чтобы число принятых к выполнению
@@ -29,10 +31,21 @@ public class B_Sheduler {
         //в период [from, int] (включительно).
         //оптимизация проводится по наибольшему числу непересекающихся событий.
         //Начало и конец событий могут совпадать.
-        List<Event> result;
-        result = new ArrayList<>();
+        List<Event> result = new ArrayList<>();
         //ваше решение.
+        Arrays.sort(events, (e1, e2) -> Integer.compare(e1.stop, e2.stop)); // сортировка массива с событиями по времени окончания
 
+        for (int i = 0; i <= events.length - 1; i++) {
+            if (events[i].start >= from && events[i].stop <= to) { // фильтр по заданному заполнению
+                if (result.size() == 0) {
+                    result.add(events[i]);
+                    continue;
+                }
+                if (events[i].start >= result.get(result.size() - 1).stop) {
+                    result.add(events[i]);
+                }
+            }
+        }
 
         return result;          //вернем итог
     }

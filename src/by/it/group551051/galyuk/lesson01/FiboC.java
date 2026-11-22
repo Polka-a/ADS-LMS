@@ -29,7 +29,7 @@ public class FiboC {
         mods.add(0);
         mods.add(1);
 
-        for (int i = 2; i <= m*6; i++) {
+        for (int i = 2; i <= m*7; i++) {
             mods.add((mods.get(i-1) + mods.get(i-2)) % m);
 
         if ((mods.get(mods.size() - 1) == 1) && (mods.get(mods.size() - 2) == 0)) {
