@@ -4,7 +4,9 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.List;
-
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class Lesson02Test {
@@ -26,7 +28,44 @@ public class Lesson02Test {
         boolean ok = starts.toString().equals("[1.0, 2.2, 3.7, 5.5, 8.1]");
         assertTrue("slowA failed", ok);
     }
+    @Test(timeout = 2000)
+    public void checkA_empty() {
+        A_VideoRegistrator instance = new A_VideoRegistrator();
+        double[] events = {};
+        List<Double> starts = instance.calcStartTimes(events, 1);
 
+        assertTrue(starts.isEmpty());
+    }
+
+    @Test(timeout = 2000)
+    public void checkA_oneEvent() {
+        A_VideoRegistrator instance = new A_VideoRegistrator();
+        double[] events = {5};
+
+        List<Double> starts = instance.calcStartTimes(events, 1);
+
+        assertEquals("[5.0]", starts.toString());
+    }
+
+    @Test(timeout = 2000)
+    public void checkA_duplicates() {
+        A_VideoRegistrator instance = new A_VideoRegistrator();
+        double[] events = {1, 1, 1, 2, 2, 3};
+
+        List<Double> starts = instance.calcStartTimes(events, 1);
+
+        assertEquals("[1.0, 3.0]", starts.toString());
+    }
+
+    @Test(timeout = 2000)
+    public void checkA_unsorted() {
+        A_VideoRegistrator instance = new A_VideoRegistrator();
+        double[] events = {5, 1, 3, 2, 4};
+
+        List<Double> starts = instance.calcStartTimes(events, 1);
+
+        assertEquals("[1.0, 3.0, 5.0]", starts.toString());
+    }
     @Test(timeout = 2000)
     public void checkB_sheduler() {
         B_Sheduler instance = new B_Sheduler();
@@ -44,11 +83,132 @@ public class Lesson02Test {
     }
 
     @Test(timeout = 2000)
+    public void checkB_empty() {
+        B_Sheduler instance = new B_Sheduler();
+        B_Sheduler.Event[] events = {};
+
+        List<B_Sheduler.Event> result =
+                instance.calcStartTimes(events, 0, 10);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test(timeout = 2000)
+    public void checkB_oneEvent() {
+        B_Sheduler instance = new B_Sheduler();
+        B_Sheduler.Event[] events = {
+                new B_Sheduler.Event(2, 5)
+        };
+
+        List<B_Sheduler.Event> result =
+                instance.calcStartTimes(events, 0, 10);
+
+        assertEquals("[(2:5)]", result.toString());
+    }
+
+    @Test(timeout = 2000)
+    public void checkB_nonOverlapping() {
+        B_Sheduler instance = new B_Sheduler();
+        B_Sheduler.Event[] events = {
+                new B_Sheduler.Event(0, 1),
+                new B_Sheduler.Event(1, 2),
+                new B_Sheduler.Event(2, 3),
+                new B_Sheduler.Event(3, 4)
+        };
+
+        List<B_Sheduler.Event> result =
+                instance.calcStartTimes(events, 0, 4);
+
+        assertEquals(4, result.size());
+    }
+
+    @Test(timeout = 2000)
+    public void checkB_overlapping() {
+        B_Sheduler instance = new B_Sheduler();
+        B_Sheduler.Event[] events = {
+                new B_Sheduler.Event(0, 5),
+                new B_Sheduler.Event(1, 2),
+                new B_Sheduler.Event(2, 3),
+                new B_Sheduler.Event(3, 4)
+        };
+
+        List<B_Sheduler.Event> result =
+                instance.calcStartTimes(events, 0, 5);
+
+        assertEquals("[(1:2), (2:3), (3:4)]", result.toString());
+    }
+
+    @Test(timeout = 2000)
     public void checkC_greedyKnapsack() throws Exception {
         InputStream inputStream = C_GreedyKnapsack.class.getResourceAsStream("greedyKnapsack.txt");
         double costFinal = new C_GreedyKnapsack().calc(inputStream);
         boolean ok = costFinal == 200;
         assertTrue("B_Sheduler failed", ok);
+    }
+
+    @Test(timeout = 2000)
+    public void checkC_empty() throws Exception {
+        String data = "0 60";
+
+        InputStream input = new ByteArrayInputStream(
+                data.getBytes(StandardCharsets.UTF_8)
+        );
+
+        double result = new C_GreedyKnapsack().calc(input);
+
+        assertEquals(0, result, 0.0001);
+    }
+
+    @Test(timeout = 2000)
+    public void checkC_oneItem() throws Exception {
+        String data = "1 20\n100 10";
+
+        InputStream input = new ByteArrayInputStream(
+                data.getBytes(StandardCharsets.UTF_8)
+        );
+
+        double result = new C_GreedyKnapsack().calc(input);
+
+        assertEquals(100, result, 0.0001);
+    }
+
+    @Test(timeout = 2000)
+    public void checkC_fractionalItem() throws Exception {
+        String data = "1 5\n100 10";
+
+        InputStream input = new ByteArrayInputStream(
+                data.getBytes(StandardCharsets.UTF_8)
+        );
+
+        double result = new C_GreedyKnapsack().calc(input);
+
+        assertEquals(50, result, 0.0001);
+    }
+
+    @Test(timeout = 2000)
+    public void checkC_fractionalDivision() throws Exception {
+        String data = "1 1\n10 3";
+
+        InputStream input = new ByteArrayInputStream(
+                data.getBytes(StandardCharsets.UTF_8)
+        );
+
+        double result = new C_GreedyKnapsack().calc(input);
+
+        assertEquals(10.0 / 3, result, 0.0001);
+    }
+
+    @Test(timeout = 2000)
+    public void checkC_multipleItems() throws Exception {
+        String data = "3 15\n100 10\n90 10\n120 20";
+
+        InputStream input = new ByteArrayInputStream(
+                data.getBytes(StandardCharsets.UTF_8)
+        );
+
+        double result = new C_GreedyKnapsack().calc(input);
+
+        assertEquals(145, result, 0.0001);
     }
 
 }

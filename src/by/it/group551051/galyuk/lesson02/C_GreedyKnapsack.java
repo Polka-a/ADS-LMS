@@ -43,7 +43,36 @@ public class C_GreedyKnapsack {
         //тут необходимо реализовать решение задачи
         //итогом является максимально воможная стоимость вещей в рюкзаке
         //вещи можно резать на кусочки (непрерывный рюкзак)
+
+        for (int i = 0; i < items.length - 1; i++) { // сортировка массива с предметами по стоимости 1 кг по убыванию
+            for (int j = 0; j < items.length - 1 - i ; j++) {
+                double ratio1 = (double) items[j].cost / items[j].weight;
+                double ratio2 = (double) items[j + 1].cost / items[j + 1].weight;
+
+                if (ratio1 < ratio2) {
+                    Item temp = items[i];
+                    items[i] = items[j + 1];
+                    items[j + 1] = temp;
+                }
+            }
+        }
+
         double result = 0;
+        int i = 0;
+        int numWeight = 0;
+
+        while (numWeight < W && i < items.length) {
+
+            if (items[i].weight > W - numWeight) {
+                result += ((double) items[i].cost / items[i].weight) * (W - numWeight);
+                numWeight = W;
+            } else {
+                result += items[i].cost;
+                numWeight += items[i].weight;
+                i++;
+            }
+        }
+
         //тут реализуйте алгоритм сбора рюкзака
         //будет особенно хорошо, если с собственной сортировкой
         //кроме того, можете описать свой компаратор в классе Item
@@ -75,7 +104,7 @@ public class C_GreedyKnapsack {
         @Override
         public int compareTo(Item o) {
             //тут может быть ваш компаратор
-
+            // не нужен в моем решении, так как сравнение предметов было выполнено во время сортировки
 
             return 0;
         }
